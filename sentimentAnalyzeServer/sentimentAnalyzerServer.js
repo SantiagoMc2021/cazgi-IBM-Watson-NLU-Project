@@ -46,31 +46,30 @@ app.get("/url/sentiment", (req,res) => {
     return res.send("url sentiment for "+req.query.url);
 });
 
-app.get("/text/emotion", (req,res) => {
+app.get("/text/emotion", (req,res) => 
+{
     let NLU = getNLUInstance();
-    const analyzeParams = {
-    'text': req.text,
-    'features': {
-        'entities': {
-        'emotion': true
-        },
-        'keywords': {
-        'emotion': true,
-        'sentiment': true,
-        'limit': 2,
-        },
-    },
-};
+    const analyzeParams = 
+    {
+    'text': req.query.text,
+    'features': 
+        {
+            'emotion': {}
+        }
+    };
+
 
     NLU.analyze(analyzeParams)
     .then(analysisResults => 
     {
-        console.log(JSON.stringify(analysisResults, null, 2));
+        console.log(JSON.stringify(analysisResults.result, null, 2));
+              //  return res.send(req.query.text + JSON.stringify(analysisResults.result.emotion));
+              return res.send("Sadness: " + analysisResults.result.emotion.document.emotion.sadness + "  Joy: "  + analysisResults.result.emotion.document.emotion.joy + "   Fear: " + analysisResults.result.emotion.document.emotion.fear + "    Disguts: " + analysisResults.result.emotion.document.emotion.disgust + "    Anger: "+ analysisResults.result.emotion.document.emotion.anger)
     })
     .catch(err => {
         console.log('Error:',err);
     });
-    return res.send({"happy":"10","sad":"90"});
+    //return res.send({"happy":"10","sad":"90"});
 });
 
 app.get("/text/sentiment", (req,res) => 
@@ -79,32 +78,26 @@ app.get("/text/sentiment", (req,res) =>
     console.log(req.query.text);
     const analyzeParams = 
     {
+    'text': req.query.text,
     'features': 
         {
-            'entities': 
-            {
-            'emotion': false,
-            'sentiment': true,
-            'limit': 2,
-            },
-            'keywords': 
-            {
-            'emotion': false,
-            'sentiment': true,
-            'limit': 2,
-            },
-        },
-            'text': "My cat is a lovely animal. I'm happy for that reason."
+            'sentiment': {}
+        }
     };
     
     NLU.analyze(analyzeParams).then(analysisResults => 
     {
-        console.log(JSON.stringify(analysisResults, null, 2));
+        let respond = "Positive! :D";
+        console.log(JSON.stringify(analysisResults.result, null, 2));
+        if (JSON.stringify(analysisResults.result.sentiment.document.label) == '"negative"')
+            respond = "Negative! >:v/";    
+        return res.send("Text sentiment for " + '"' + req.query.text + '"' + "\n is: " + respond);
+
     })
     .catch(err => {
         console.log('Error:',err);
     });
-    return res.send("text sentiment for "+req.query.text + analysisResults);
+    return res.send("A, sos retroll");
 });
 
 //---------------------------------
