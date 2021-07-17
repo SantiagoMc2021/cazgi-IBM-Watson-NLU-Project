@@ -36,6 +36,7 @@ app.get("/",(req,res)=>{
 
 app.get("/url/emotion", (req,res) => {
     let NLU = getNLUInstance();
+     console.log("Input (URL): " + req.query.url);
     let analyzeParams = 
     {
     'url': req.query.url,
@@ -49,9 +50,11 @@ app.get("/url/emotion", (req,res) => {
     NLU.analyze(analyzeParams)
     .then(analysisResults => 
     {
-        console.log(JSON.stringify(analysisResults.result, null, 2));
+        //console.log(req.query.url);
+        //console.log(JSON.stringify(analysisResults.result.emotion.document.emotion, null, 2));
               //  return res.send(req.query.text + JSON.stringify(analysisResults.result.emotion));
-              return res.send("Sadness: " + analysisResults.result.emotion.document.emotion.sadness + "  Joy: "  + analysisResults.result.emotion.document.emotion.joy + "   Fear: " + analysisResults.result.emotion.document.emotion.fear + "    Disguts: " + analysisResults.result.emotion.document.emotion.disgust + "    Anger: "+ analysisResults.result.emotion.document.emotion.anger)
+            console.log("DONE");
+            return res.send(analysisResults.result.emotion.document.emotion)
     })
     .catch(err => {
         console.log('Error:',err);
@@ -60,7 +63,7 @@ app.get("/url/emotion", (req,res) => {
 
 app.get("/url/sentiment", (req,res) => {
     let NLU = getNLUInstance();
-    console.log(req.query.url);
+    console.log("Input (URL): " + req.query.url);
     let analyzeParams = 
     {
     'url': req.query.url,
@@ -73,13 +76,14 @@ app.get("/url/sentiment", (req,res) => {
     NLU.analyze(analyzeParams).then(analysisResults => 
     {
 
-        let respond = "Positive! :D";
-        console.log(JSON.stringify(analysisResults.result, null, 2));
+        let respond = "Positive";
+        //console.log(JSON.stringify(analysisResults.result, null, 2));
         if (JSON.stringify(analysisResults.result.sentiment.document.label) == '"negative"')
-            respond = "Negative! >:v/";    
+            respond = "Negative";    
         
-        console.log(JSON.stringify(analysisResults.result, null, 2))
-        return res.send("URL sentiment for " + '"' + req.query.url + '"' + "\n is: " + respond);
+        //console.log(JSON.stringify(analysisResults.result, null, 2))
+        console.log("DONE")
+        return res.send(respond);
     })
     .catch(err => {
         console.log('Error:',err);
@@ -89,6 +93,7 @@ app.get("/url/sentiment", (req,res) => {
 app.get("/text/emotion", (req,res) => 
 {
     let NLU = getNLUInstance();
+    console.log("Input: " + req.query.text);
     let analyzeParams = 
     {
     'text': req.query.text,
@@ -102,9 +107,11 @@ app.get("/text/emotion", (req,res) =>
     NLU.analyze(analyzeParams)
     .then(analysisResults => 
     {
-        console.log(JSON.stringify(analysisResults.result, null, 2));
+        //console.log("ENTRO");
+       // console.log(JSON.stringify(analysisResults.result.emotion, null, 2));
               //  return res.send(req.query.text + JSON.stringify(analysisResults.result.emotion));
-              return res.send("Sadness: " + analysisResults.result.emotion.document.emotion.sadness + "  Joy: "  + analysisResults.result.emotion.document.emotion.joy + "   Fear: " + analysisResults.result.emotion.document.emotion.fear + "    Disguts: " + analysisResults.result.emotion.document.emotion.disgust + "    Anger: "+ analysisResults.result.emotion.document.emotion.anger)
+              console.log("DONE");
+              return res.send(analysisResults.result.emotion.document.emotion)
     })
     .catch(err => {
         console.log('Error:',err);
@@ -115,7 +122,7 @@ app.get("/text/emotion", (req,res) =>
 app.get("/text/sentiment", (req,res) => 
 {
     let NLU = getNLUInstance();
-    console.log(req.query.text);
+    console.log("Input: " + req.query.text);
     let analyzeParams = 
     {
     'text': req.query.text,
@@ -127,17 +134,22 @@ app.get("/text/sentiment", (req,res) =>
     
     NLU.analyze(analyzeParams).then(analysisResults => 
     {
-        let respond = "Positive! :D";
-        console.log(JSON.stringify(analysisResults.result, null, 2));
-        if (JSON.stringify(analysisResults.result.sentiment.document.label) == '"negative"')
-            respond = "Negative! >:v/";    
-        return res.send("Text sentiment for " + '"' + req.query.text + '"' + "\n is: " + respond);
-
+        let respond = "NAN";
+      //  console.log(JSON.stringify(analysisResults.result, null, 2));
+        let ans = JSON.stringify(analysisResults.result.sentiment.document.label);
+        if (ans == '"negative"')
+            respond = "Negative";
+        else if(ans == '"positive"')
+            respond = "Positive";
+            else respond = "Neutral";
+        //return res.send("Text sentiment for " + '"' + req.query.text + '"' + "\n is: " + respond);
+        console.log("DONE");
+        return res.send(respond);
     })
     .catch(err => {
         console.log('Error:',err);
     });
-    return res.send("A, sos retroll");
+    
 });
 
 //---------------------------------
